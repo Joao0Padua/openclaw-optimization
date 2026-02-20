@@ -1,0 +1,1884 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenClaw — 13 Casos de Uso Reais</title>
+    <style>
+        /* ========================================
+           JP DESIGN — OPENCLAW CASE STUDIES
+           Mobile First CSS
+           ======================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-primary: #1a1a1a;
+            --color-secondary: #666;
+            --color-background: #fff;
+            --color-surface: #f5f5f5;
+            --color-border: #ddd;
+            --color-success: #00aa00;
+            --color-danger: #cc0000;
+            --color-highlight: #e8f5e9;
+            --color-low: #e3f2fd;
+            --color-medium: #fff3e0;
+            --color-high: #fce4ec;
+            --color-low-accent: #1565c0;
+            --color-medium-accent: #e65100;
+            --color-high-accent: #880e4f;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--color-primary);
+            background: var(--color-background);
+            font-size: 14px;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        /* ========================================
+           STICKY NAV — HAMBURGER
+           ======================================== */
+        .top-nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--color-background);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .top-nav-inner {
+            display: flex;
+            align-items: center;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 16px;
+            position: relative;
+        }
+
+        .nav-brand {
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--color-primary);
+            padding: 12px 16px 12px 0;
+            border-right: 1px solid var(--color-border);
+            margin-right: 0;
+            flex-shrink: 0;
+            letter-spacing: -0.01em;
+            white-space: nowrap;
+        }
+
+        .nav-links {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--color-background);
+            border-bottom: 1px solid var(--color-border);
+            flex-direction: column;
+            list-style: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .nav-links.open {
+            display: flex;
+        }
+
+        .nav-links a {
+            display: block;
+            padding: 14px 24px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--color-secondary);
+            text-decoration: none;
+            border-bottom: 1px solid var(--color-border);
+            min-height: 44px;
+            transition: color 0.15s ease, background 0.15s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--color-primary);
+            background: var(--color-surface);
+        }
+
+        .nav-links a:last-child {
+            border-bottom: none;
+        }
+
+        .nav-links .nav-section-label {
+            padding: 8px 24px 4px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--color-secondary);
+            border-bottom: none;
+            min-height: unset;
+            font-weight: 700;
+            background: var(--color-surface);
+        }
+
+        .hamburger {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: auto;
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 20px;
+            height: 2px;
+            background: var(--color-primary);
+            transition: transform 0.3s ease, opacity 0.2s ease;
+            transform-origin: center;
+        }
+
+        .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+        .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+        /* Desktop nav */
+        @media (min-width: 768px) {
+            .hamburger { display: none; }
+            .nav-links {
+                display: flex !important;
+                position: static;
+                flex-direction: row;
+                border: none;
+                box-shadow: none;
+                overflow-x: auto;
+                padding: 0 8px;
+            }
+            .nav-links a {
+                padding: 12px 10px;
+                border-bottom: none;
+                font-size: 12px;
+                white-space: nowrap;
+                border-bottom: 2px solid transparent;
+            }
+            .nav-links a:hover {
+                border-bottom-color: var(--color-primary);
+                background: none;
+            }
+            .nav-links .nav-section-label {
+                display: none;
+            }
+        }
+
+        /* ========================================
+           LAYOUT
+           ======================================== */
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 24px 16px 64px;
+        }
+
+        /* ========================================
+           HEADER
+           ======================================== */
+        .doc-header {
+            text-align: center;
+            padding: 48px 0 40px;
+            border-bottom: 3px solid var(--color-primary);
+            margin-bottom: 40px;
+        }
+
+        .doc-header img {
+            height: 80px;
+            width: auto;
+            display: block;
+            margin: 0 auto 32px;
+        }
+
+        .doc-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--color-primary);
+            letter-spacing: -0.03em;
+            line-height: 1.2;
+            margin-bottom: 12px;
+        }
+
+        .doc-header .subtitle {
+            font-size: 14px;
+            color: var(--color-secondary);
+            max-width: 540px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        .doc-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 24px;
+        }
+
+        .doc-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--color-secondary);
+        }
+
+        .doc-meta-item i {
+            width: 14px;
+            height: 14px;
+        }
+
+        @media (min-width: 768px) {
+            .doc-header h1 { font-size: 32px; }
+        }
+
+        /* ========================================
+           STATS BAR
+           ======================================== */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1px;
+            background: var(--color-border);
+            border: 1px solid var(--color-border);
+            margin-bottom: 48px;
+        }
+
+        .stat-item {
+            background: var(--color-background);
+            padding: 20px 16px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--color-primary);
+            letter-spacing: -0.03em;
+            line-height: 1;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--color-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-top: 4px;
+            display: block;
+        }
+
+        @media (min-width: 480px) {
+            .stats-bar { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        /* ========================================
+           HEADINGS
+           ======================================== */
+        h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin: 56px 0 24px 0;
+            padding-bottom: 12px;
+            border-bottom: 3px solid var(--color-primary);
+            letter-spacing: -0.02em;
+        }
+
+        h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin: 40px 0 16px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        h4 {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin: 20px 0 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        p {
+            margin-bottom: 12px;
+            color: var(--color-primary);
+        }
+
+        @media (min-width: 768px) {
+            h2 { font-size: 24px; }
+        }
+
+        /* ========================================
+           COMPLEXITY INTRO
+           ======================================== */
+        .complexity-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            margin-bottom: 32px;
+        }
+
+        .complexity-header.low { background: var(--color-low); border-left: 4px solid var(--color-low-accent); }
+        .complexity-header.medium { background: var(--color-medium); border-left: 4px solid var(--color-medium-accent); }
+        .complexity-header.high { background: var(--color-high); border-left: 4px solid var(--color-high-accent); }
+
+        .complexity-icon {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .complexity-icon i { width: 24px; height: 24px; }
+
+        .complexity-header.low .complexity-icon i { color: var(--color-low-accent); }
+        .complexity-header.medium .complexity-icon i { color: var(--color-medium-accent); }
+        .complexity-header.high .complexity-icon i { color: var(--color-high-accent); }
+
+        .complexity-info h3 {
+            margin: 0 0 6px;
+            border: none;
+            padding: 0;
+            font-size: 15px;
+        }
+
+        .complexity-header.low .complexity-info h3 { color: var(--color-low-accent); }
+        .complexity-header.medium .complexity-info h3 { color: var(--color-medium-accent); }
+        .complexity-header.high .complexity-info h3 { color: var(--color-high-accent); }
+
+        .complexity-info p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--color-secondary);
+        }
+
+        /* ========================================
+           CASE CARDS
+           ======================================== */
+        .case-card {
+            border: 1px solid var(--color-border);
+            margin-bottom: 32px;
+            overflow: hidden;
+        }
+
+        .case-header {
+            padding: 16px 20px;
+            background: var(--color-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .case-number {
+            font-size: 11px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .case-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.3;
+        }
+
+        .case-body {
+            padding: 20px;
+        }
+
+        .case-context {
+            background: var(--color-surface);
+            padding: 14px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: var(--color-secondary);
+            line-height: 1.5;
+            border-left: 3px solid var(--color-border);
+        }
+
+        .case-context strong {
+            color: var(--color-primary);
+            display: block;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 6px;
+        }
+
+        .case-section-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--color-secondary);
+            margin: 20px 0 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .case-section-label i {
+            width: 12px;
+            height: 12px;
+        }
+
+        /* Flow steps */
+        .flow-block {
+            background: var(--color-surface);
+            padding: 16px;
+            font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+            font-size: 12px;
+            line-height: 1.7;
+            margin-bottom: 16px;
+            border-left: 3px solid var(--color-border);
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .flow-part {
+            margin-bottom: 16px;
+        }
+
+        .flow-part-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--color-secondary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        .flow-part-title i {
+            width: 12px;
+            height: 12px;
+        }
+
+        .flow-steps {
+            background: var(--color-surface);
+            padding: 14px 16px;
+            border-left: 3px solid var(--color-border);
+            font-size: 12.5px;
+            line-height: 1.7;
+        }
+
+        .flow-steps .step {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 6px;
+            align-items: flex-start;
+        }
+
+        .step-num {
+            flex-shrink: 0;
+            width: 18px;
+            height: 18px;
+            background: var(--color-primary);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin-top: 1px;
+        }
+
+        .checkpoint {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--color-medium);
+            border: 1px solid #ffe0b2;
+            padding: 10px 14px;
+            margin: 10px 0;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--color-medium-accent);
+        }
+
+        .checkpoint i { width: 14px; height: 14px; flex-shrink: 0; }
+
+        /* Tags */
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .tag {
+            font-size: 11px;
+            padding: 3px 8px;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            color: var(--color-secondary);
+            font-weight: 500;
+            font-family: 'SF Mono', Consolas, monospace;
+        }
+
+        /* Result box */
+        .result-box {
+            background: var(--color-highlight);
+            border: 1px solid #c8e6c9;
+            padding: 14px;
+            margin-top: 16px;
+        }
+
+        .result-box-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--color-success);
+            margin-bottom: 10px;
+        }
+
+        .result-box-header i { width: 14px; height: 14px; }
+
+        .result-items {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .result-items li {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .result-items li i {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+            color: var(--color-success);
+            margin-top: 1px;
+        }
+
+        /* Architecture diagram */
+        .arch-agent {
+            border: 1px solid var(--color-border);
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .arch-agent-header {
+            background: var(--color-primary);
+            color: white;
+            padding: 10px 14px;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .arch-agent-header i { width: 14px; height: 14px; }
+
+        .agent-model {
+            font-size: 10px;
+            font-weight: 400;
+            opacity: 0.6;
+            margin-left: auto;
+        }
+
+        .arch-agent-body {
+            padding: 14px;
+            background: var(--color-surface);
+        }
+
+        .arch-agent-body .step {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 6px;
+            align-items: flex-start;
+            font-size: 12.5px;
+        }
+
+        .arch-arrow {
+            text-align: center;
+            padding: 6px;
+            color: var(--color-secondary);
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .arch-arrow i { width: 16px; height: 16px; }
+
+        /* Timeline */
+        .timeline {
+            border-left: 2px solid var(--color-border);
+            padding-left: 20px;
+            margin: 16px 0;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -25px;
+            top: 4px;
+            width: 8px;
+            height: 8px;
+            background: var(--color-primary);
+            border-radius: 50%;
+        }
+
+        .timeline-time {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--color-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .timeline-text {
+            font-size: 13px;
+            color: var(--color-primary);
+        }
+
+        /* ========================================
+           HIGHLIGHT BOX
+           ======================================== */
+        .highlight-box {
+            background: var(--color-surface);
+            border-left: 4px solid var(--color-primary);
+            padding: 16px;
+            margin: 24px 0;
+        }
+
+        .highlight-box h4 {
+            margin: 0 0 10px;
+            font-size: 12px;
+        }
+
+        /* ========================================
+           PRINCIPLES SECTION
+           ======================================== */
+        .principles-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .principle-card {
+            border: 1px solid var(--color-border);
+            padding: 20px;
+        }
+
+        .principle-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--color-border);
+            line-height: 1;
+            margin-bottom: 12px;
+            letter-spacing: -0.05em;
+        }
+
+        .principle-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: 8px;
+        }
+
+        .principle-text {
+            font-size: 13px;
+            color: var(--color-secondary);
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        @media (min-width: 600px) {
+            .principles-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (min-width: 900px) {
+            .principles-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        /* ========================================
+           SIGNAL TABLE
+           ======================================== */
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: 16px 0 24px;
+        }
+
+        table {
+            width: 100%;
+            min-width: 300px;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            background: var(--color-primary);
+            color: white;
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--color-border);
+            vertical-align: top;
+        }
+
+        tr:nth-child(even) { background: #fafafa; }
+
+        .check-yes { color: var(--color-success); font-weight: 700; }
+        .check-no { color: var(--color-danger); font-weight: 700; }
+
+        /* Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 2px 8px;
+        }
+
+        .badge-low { background: var(--color-low); color: var(--color-low-accent); }
+        .badge-medium { background: var(--color-medium); color: var(--color-medium-accent); }
+        .badge-high { background: var(--color-high); color: var(--color-high-accent); }
+
+        /* ========================================
+           DIVIDER
+           ======================================== */
+        .case-divider {
+            border: none;
+            border-top: 1px solid var(--color-border);
+            margin: 0;
+        }
+
+        /* ========================================
+           FOOTER
+           ======================================== */
+        .doc-footer {
+            margin-top: 80px;
+            padding: 32px 0;
+            border-top: 3px solid var(--color-primary);
+            text-align: center;
+        }
+
+        .doc-footer img {
+            height: 40px;
+            width: auto;
+            display: block;
+            margin: 0 auto 16px;
+        }
+
+        .doc-footer .claim {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--color-secondary);
+            margin-bottom: 16px;
+        }
+
+        .doc-footer .contacts {
+            font-size: 12px;
+            color: var(--color-secondary);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px 24px;
+        }
+
+        .doc-footer .contacts a {
+            color: var(--color-secondary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .doc-footer .contacts a i { width: 12px; height: 12px; }
+
+        /* ========================================
+           PRINT STYLES
+           ======================================== */
+        @media print {
+            .top-nav { display: none; }
+            .case-card { break-inside: avoid; }
+            .arch-agent { break-inside: avoid; }
+        }
+
+        /* ========================================
+           RESPONSIVE TWEAKS
+           ======================================== */
+        @media (min-width: 768px) {
+            .container { padding: 40px 32px 80px; }
+            .doc-header { padding: 64px 0 48px; }
+            .doc-header h1 { font-size: 36px; }
+            .case-body { padding: 28px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==============================
+         STICKY NAV
+         ============================== -->
+    <nav class="top-nav" aria-label="Navegação principal">
+        <div class="top-nav-inner">
+            <span class="nav-brand">OpenClaw — Casos de Uso</span>
+            <button class="hamburger" aria-label="Menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-links" id="nav-menu">
+                <li class="nav-section-label">Baixa complexidade</li>
+                <li><a href="#caso-1">1. Marketing</a></li>
+                <li><a href="#caso-2">2. Consultora</a></li>
+                <li><a href="#caso-3">3. Clínica</a></li>
+                <li><a href="#caso-4">4. E-commerce</a></li>
+                <li><a href="#caso-5">5. Imobiliária</a></li>
+                <li><a href="#caso-6">6. Freelancer</a></li>
+                <li class="nav-section-label">Média complexidade</li>
+                <li><a href="#caso-7">7. Fornecedores</a></li>
+                <li><a href="#caso-8">8. Competitiva</a></li>
+                <li><a href="#caso-9">9. Onboarding</a></li>
+                <li><a href="#caso-10">10. CI/CD</a></li>
+                <li class="nav-section-label">Alta complexidade</li>
+                <li><a href="#caso-11">11. SEO Multi-Agente</a></li>
+                <li><a href="#caso-12">12. Suporte</a></li>
+                <li><a href="#caso-13">13. Inteligência</a></li>
+                <li class="nav-section-label">Notas</li>
+                <li><a href="#principios">Princípios</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <!-- ==============================
+             HEADER
+             ============================== -->
+        <header class="doc-header">
+            <img src="logo-jp.svg" alt="JP Design" onerror="this.style.display='none'">
+            <h1>OpenClaw — 13 Casos de Uso Reais</h1>
+            <p class="subtitle">Implementações documentadas pela comunidade, organizadas por complexidade crescente. Cada caso inclui contexto, fluxo de execução e resultados reportados.</p>
+            <div class="doc-meta">
+                <span class="doc-meta-item">
+                    <i data-lucide="calendar"></i>
+                    Fevereiro 2026
+                </span>
+                <span class="doc-meta-item">
+                    <i data-lucide="file-text"></i>
+                    13 casos documentados
+                </span>
+                <span class="doc-meta-item">
+                    <i data-lucide="layers"></i>
+                    3 níveis de complexidade
+                </span>
+            </div>
+        </header>
+
+        <!-- ==============================
+             STATS BAR
+             ============================== -->
+        <div class="stats-bar" role="region" aria-label="Estatísticas">
+            <div class="stat-item">
+                <span class="stat-number">13</span>
+                <span class="stat-label">Casos documentados</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">~65h</span>
+                <span class="stat-label">Poupança semanal média</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">€15–50</span>
+                <span class="stat-label">Custo mensal típico</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">3</span>
+                <span class="stat-label">Agentes no caso mais complexo</span>
+            </div>
+        </div>
+
+        <!-- ==============================
+             INTRO
+             ============================== -->
+        <div class="highlight-box">
+            <h4>Como ler este documento</h4>
+            <p style="margin:0;font-size:13px;color:var(--color-secondary);line-height:1.6;">Os casos estão organizados por <strong style="color:var(--color-primary)">complexidade crescente</strong> — não por impacto. Um caso de baixa complexidade pode ter tanto retorno quanto um de alta, dependendo do contexto. O fator que define a complexidade é a arquitetura: número de agentes, fases sequenciais, checkpoints humanos e integrações externas.</p>
+        </div>
+
+        <!-- ==============================
+             SECÇÃO 1 — BAIXA COMPLEXIDADE
+             ============================== -->
+        <h2 id="baixa-complexidade">Complexidade Baixa</h2>
+
+        <div class="complexity-header low">
+            <div class="complexity-icon">
+                <i data-lucide="zap"></i>
+            </div>
+            <div class="complexity-info">
+                <h3>Single-agent. Setup em horas. Retorno imediato.</h3>
+                <p>Um agente autónomo, sem dependências externas complexas. Cada caso pode ser implementado numa tarde e começa a produzir valor no dia seguinte.</p>
+            </div>
+        </div>
+
+        <!-- CASO 1 -->
+        <div class="case-card" id="caso-1">
+            <div class="case-header">
+                <span class="case-number">Caso 01</span>
+                <span class="case-title">Agência de Marketing Digital — Relatórios Automáticos</span>
+            </div>
+            <div class="case-body">
+                <div class="case-context">
+                    <strong>Contexto</strong>
+                    Agência com 3 gestores de conta e 12 clientes ativos. Cada gestor passava 2h/dia a compilar métricas manualmente a partir do Google Analytics, Meta Ads e LinkedIn.
+                </div>
+                <div class="case-context" style="border-left-color:var(--color-danger);background:#fff5f5;">
+                    <strong>Problema</strong>
+                    Dados em 3 plataformas diferentes, compilação manual em Excel, erros frequentes, relatórios com 1-2 dias de atraso, clientes a pedir updates por WhatsApp constantemente.
+                </div>
+
+                <div class="case-section-label">
+                    <i data-lucide="git-branch"></i>
+                    Fluxo de execução — toda segunda-feira às 8h
+                </div>
+                <div class="flow-steps">
+                    <div class="step"><span class="step-num">1</span><span>Recolhe dados de Google Analytics (sessões, conversões, bounce rate)</span></div>
+                    <div class="step"><span class="step-num">2</span><span>Recolhe dados de Meta Ads (impressões, cliques, CTR, custo/conversão)</span></div>
+                    <div class="step"><span class="step-num">3</span><span>Recolhe dados de LinkedIn Ads (mesmas métricas)</span></div>
+                    <div class="step"><span class="step-num">4</span><span>Compila relatório PDF com as métricas da semana anterior</span></div>
+                    <div class="step"><span class="step-num">5</span><span>Compara com semana anterior — se alguma métrica desce >20%, inclui aviso em destaque</span></div>
+                    <div class="step"><span class="step-num">6</span><span>Sugere 2 ações corretivas para métricas em queda</span></div>
+                    <div class="step"><span class="step-num">7</span><span>Envia por email ao cliente com assunto "Relatório Semanal — [data]"</span></div>
+                    <div class="step"><span class="step-num">8</span><span>Envia resumo de 3 linhas ao gestor via Slack</span></div>
+                </div>
+
+                <div class="case-section-label"><i data-lucide="tool"></i> Tools usadas</div>
+                <div class="tag-list">
+                    <span class="tag">web_fetch</span>
+                    <span class="tag">message</span>
+                    <span class="tag">cron</span>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-box-header"><i data-lucide="trending-up"></i> Resultados</div>
+                    <ul class="result-items">
+                        <li><i data-lucide="check"></i><span>2h/dia por gestor → 15 minutos de revisão</span></li>
+                        <li><i data-lucide="check"></i><span>Relatórios pontuais e sem erros</span></li>
+                        <li><i data-lucide="check"></i><span>Gestores libertados para trabalho estratégico</span></li>
+                        <li><i data-lucide="check"></i><span>Clientes mais satisfeitos</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- CASO 2 -->
+        <div class="case-card" id="caso-2">
+            <div class="case-header">
+                <span class="case-number">Caso 02</span>
+                <span class="case-title">Consultora — Email, CRM e Agendamento</span>
+            </div>
+            <div class="case-body">
+                <div class="case-context">
+                    <strong>Contexto</strong>
+                    Consultor independente com 8 clientes ativos. 3-4h/semana em admin: responder emails repetitivos, agendar reuniões, enviar follow-ups, atualizar CRM.
+                </div>
+
+                <div class="flow-part">
+                    <div class="flow-part-title"><i data-lucide="mail"></i> Parte A — Email inteligente (às 9h)</div>
+                    <div class="flow-steps">
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Lê inbox. Categoriza cada email: urgente / follow-up / informativo / spam</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Para clientes conhecidos: rascunha resposta para o consultor aprovar</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Para FAQs (orçamentos, disponibilidade, processo): responde automaticamente</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Resumo diário: "3 emails respondidos, 2 aguardam aprovação"</span></div>
+                    </div>
+                </div>
+
+                <div class="flow-part">
+                    <div class="flow-part-title"><i data-lucide="calendar"></i> Parte B — Agendamento</div>
+                    <div class="flow-steps">
+                        <div class="step"><span class="step-num">1</span><span>Quando cliente pede reunião: verifica calendário do consultor</span></div>
+                        <div class="step"><span class="step-num">2</span><span>Propõe 3 slots disponíveis na semana seguinte</span></div>
+                        <div class="step"><span class="step-num">3</span><span>Confirma escolha e cria evento com link Zoom</span></div>
+                        <div class="step"><span class="step-num">4</span><span>Envia confirmação a ambos com agenda da reunião</span></div>
+                    </div>
+                </div>
+
+                <div class="flow-part">
+                    <div class="flow-part-title"><i data-lucide="refresh-cw"></i> Parte C — Follow-up automático (diário às 18h)</div>
+                    <div class="flow-steps">
+                        <div class="step"><span class="step-num">1</span><span>Verifica propostas enviadas sem resposta há mais de 5 dias</span></div>
+                        <div class="step"><span class="step-num">2</span><span>Envia follow-up personalizado a cada prospect</span></div>
+                        <div class="step"><span class="step-num">3</span><span>Regista data no CRM</span></div>
+                        <div class="step"><span class="step-num">4</span><span>Após segundo follow-up sem resposta: alerta o consultor</span></div>
+                    </div>
+                </div>
+
+                <div class="case-section-label"><i data-lucide="tool"></i> Tools usadas</div>
+                <div class="tag-list">
+                    <span class="tag">web_fetch</span>
+                    <span class="tag">message</span>
+                    <span class="tag">cron</span>
+                    <span class="tag">Gmail API</span>
+                    <span class="tag">Google Calendar</span>
+                    <span class="tag">HubSpot</span>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-box-header"><i data-lucide="trending-up"></i> Resultados</div>
+                    <ul class="result-items">
+                        <li><i data-lucide="check"></i><span>3-4h/semana em admin → 30 minutos de revisão</span></li>
+                        <li><i data-lucide="check"></i><span>~14h/mês recuperadas para trabalho faturável</span></li>
+                        <li><i data-lucide="check"></i><span>Zero follow-ups esquecidos</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- CASO 3 -->
+        <div class="case-card" id="caso-3">
+            <div class="case-header">
+                <span class="case-number">Caso 03</span>
+                <span class="case-title">Clínica Médica — Lembretes e FAQs 24/7</span>
+            </div>
+            <div class="case-body">
+                <div class="case-context">
+                    <strong>Contexto</strong>
+                    Clínica com 2 médicos e 1 secretária. 40% do tempo da secretária era gasto em lembretes de consultas por telefone e resposta a perguntas frequentes via WhatsApp.
+                </div>
+
+                <div class="flow-part">
+                    <div class="flow-part-title"><i data-lucide="bell"></i> Lembretes de consulta — às 18h do dia anterior</div>
+                    <div class="flow-steps">
+                        <div class="step"><span class="step-num">1</span><span>Envia WhatsApp: "Lembrete: consulta amanhã às [hora] com Dr. [nome]"</span></div>
+                        <div class="step"><span class="step-num">2</span><span>Aguarda confirmação por 2 horas</span></div>
+                        <div class="step"><span class="step-num">3</span><span>Se "não posso": cancela, contacta próximo da lista de espera, notifica secretária</span></div>
+                        <div class="step"><span class="step-num">4</span><span>Às 9h: envia resumo de confirmações/cancelamentos à secretária</span></div>
+                    </div>
+                </div>
+
+                <div class="flow-part">
+                    <div class="flow-part-title"><i data-lucide="message-circle"></i> FAQs automáticas — 24/7</div>
+                    <div class="flow-steps">
+                        <div class="step"><i data-lucide="check" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-success)"></i><span>Horário de funcionamento</span></div>
+                        <div class="step"><i data-lucide="check" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-success)"></i><span>Localização e estacionamento</span></div>
+                        <div class="step"><i data-lucide="check" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-success)"></i><span>Seguros aceites, preços de consulta</span></div>
+                        <div class="step"><i data-lucide="check" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-success)"></i><span>Como marcar/cancelar</span></div>
+                        <div class="step"><i data-lucide="alert-circle" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-medium-accent)"></i><span>Perguntas fora deste âmbito → encaminha para secretária com contexto</span></div>
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-box-header"><i data-lucide="trending-up"></i> Resultados por semana</div>
+                    <ul class="result-items">
+                        <li><i data-lucide="check"></i><span>Zero chamadas manuais para lembretes</span></li>
+                        <li><i data-lucide="check"></i><span>Faltas reduzidas 65%</span></li>
+                        <li><i data-lucide="check"></i><span>-80% mensagens à secretária</span></li>
+                        <li><i data-lucide="check"></i><span>12h/semana libertadas para trabalho de maior valor</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- CASO 4 -->
+        <div class="case-card" id="caso-4">
+            <div class="case-header">
+                <span class="case-number">Caso 04</span>
+                <span class="case-title">E-commerce — Suporte, Stock e Reviews</span>
+            </div>
+            <div class="case-body">
+                <div class="case-context">
+                    <strong>Contexto</strong>
+                    Loja online com 200+ SKUs. Dono passava 1-2h/dia a verificar stock, responder dúvidas no chat e compilar vendas.
+                </div>
+
+                <div class="flow-part">
+                    <div class="flow-part-title"><i data-lucide="package"></i> Monitorização de stock — a cada 6h</div>
+                    <div class="flow-steps">
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Verifica inventário. Se produto abaixo do mínimo: WhatsApp ao dono</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Aguarda confirmação para criar pedido de compra</span></div>
+                    </div>
+                </div>
+
+                <div class="flow-part">
+                    <div class="flow-part-title"><i data-lucide="headphones"></i> Suporte 24/7 — em tempo real</div>
+                    <div class="flow-steps">
+                        <div class="step"><i data-lucide="check" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-success)"></i><span>Estado da encomenda, prazo de entrega, política de devoluções</span></div>
+                        <div class="step"><i data-lucide="check" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-success)"></i><span>Especificações de produto</span></div>
+                        <div class="step"><i data-lucide="alert-circle" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-medium-accent)"></i><span>Casos complexos ou reclamações → escalados ao dono via Slack com contexto completo</span></div>
+                    </div>
+                </div>
+
+                <div class="flow-part">
+                    <div class="flow-part-title"><i data-lucide="bar-chart-2"></i> Relatório diário — às 20h</div>
+                    <div class="flow-steps">
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Vendas do dia por produto, encomendas pendentes</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Receita acumulada do mês vs objetivo</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Reviews negativas com sugestão de resposta (dono aprova antes de publicar)</span></div>
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-box-header"><i data-lucide="trending-up"></i> Resultados</div>
+                    <ul class="result-items">
+                        <li><i data-lucide="check"></i><span>10h/semana libertadas para o dono</span></li>
+                        <li><i data-lucide="check"></i><span>Suporte disponível 24/7</span></li>
+                        <li><i data-lucide="check"></i><span>Tempo de resposta: de horas para segundos</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- CASO 5 -->
+        <div class="case-card" id="caso-5">
+            <div class="case-header">
+                <span class="case-number">Caso 05</span>
+                <span class="case-title">Imobiliária — Triagem e Qualificação de Leads</span>
+            </div>
+            <div class="case-body">
+                <div class="case-context">
+                    <strong>Contexto</strong>
+                    Agência com 4 consultores. Volume alto de leads inbound via Idealista e Imovirtual. Triagem manual consumia 2-3h/dia por consultor.
+                </div>
+
+                <div class="flow-steps" style="margin-bottom:16px;">
+                    <div class="step"><span class="step-num">1</span><span>Lê perfil: orçamento declarado, zona de interesse, tipologia pretendida</span></div>
+                    <div class="step"><span class="step-num">2</span><span>Qualifica: orçamento >€200k, zona X ou Y, T2 ou T3</span></div>
+                    <div class="step"><span class="step-num">3</span><span>Se qualificado: distribui ao consultor com menor carga + briefing completo</span></div>
+                    <div class="step"><span class="step-num">4</span><span>Se fora do perfil: responde com imóveis alternativos disponíveis</span></div>
+                    <div class="step"><span class="step-num">5</span><span>Agendamento automático: propõe 3 slots, confirma visita, cria evento no calendário</span></div>
+                    <div class="step"><span class="step-num">6</span><span>Follow-up 48h após cada visita</span></div>
+                    <div class="step"><span class="step-num">7</span><span>Consultor envia fotos + notas brutas → agente gera ficha completa para portais</span></div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-box-header"><i data-lucide="trending-up"></i> Resultados</div>
+                    <ul class="result-items">
+                        <li><i data-lucide="check"></i><span>-10h/semana por consultor em triagem</span></li>
+                        <li><i data-lucide="check"></i><span>Conversão de leads melhorou 30%</span></li>
+                        <li><i data-lucide="check"></i><span>Fichas de imóveis em 2 minutos</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- CASO 6 -->
+        <div class="case-card" id="caso-6">
+            <div class="case-header">
+                <span class="case-number">Caso 06</span>
+                <span class="case-title">Freelancer — Gestão de Projetos e Faturação</span>
+            </div>
+            <div class="case-body">
+                <div class="case-context">
+                    <strong>Contexto</strong>
+                    Designer freelancer com 5-6 projetos simultâneos. Perdia tempo a rastrear horas, enviar faturas e fazer follow-up de pagamentos.
+                </div>
+
+                <div class="flow-part">
+                    <div class="flow-part-title"><i data-lucide="clock"></i> Tracking de horas</div>
+                    <div class="flow-steps">
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Freelancer envia via WhatsApp: "Trabalhei 3h no projeto X hoje"</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Regista em spreadsheet com data, projeto e horas</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Resumo diário às 18h: "Hoje: 5.5h. Esta semana: 22h."</span></div>
+                    </div>
+                </div>
+
+                <div class="flow-part">
+                    <div class="flow-part-title"><i data-lucide="file-text"></i> Fatura automática — último dia do mês</div>
+                    <div class="flow-steps">
+                        <div class="step"><span class="step-num">1</span><span>Agrega horas por projeto</span></div>
+                        <div class="step"><span class="step-num">2</span><span>Aplica tarifa definida por cliente</span></div>
+                        <div class="step"><span class="step-num">3</span><span>Gera PDF de fatura com template definido</span></div>
+                        <div class="step"><span class="step-num">4</span><span>Envia por email ao cliente</span></div>
+                    </div>
+                </div>
+
+                <div class="flow-part">
+                    <div class="flow-part-title"><i data-lucide="alert-circle"></i> Follow-up de pagamento</div>
+                    <div class="flow-steps">
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Se não paga em 15 dias: lembrete educado</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Aos 30 dias: lembrete mais direto com freelancer em CC</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Freelancer alertado para tomar ação manual</span></div>
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-box-header"><i data-lucide="trending-up"></i> Resultados</div>
+                    <ul class="result-items">
+                        <li><i data-lucide="check"></i><span>Admin de faturação: 3h/semana → 20 minutos</span></li>
+                        <li><i data-lucide="check"></i><span>Zero faturas esquecidas</span></li>
+                        <li><i data-lucide="check"></i><span>Follow-ups automáticos recuperaram pagamentos sistematicamente</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==============================
+             SECÇÃO 2 — MÉDIA COMPLEXIDADE
+             ============================== -->
+        <h2 id="media-complexidade">Complexidade Média</h2>
+
+        <div class="complexity-header medium">
+            <div class="complexity-icon">
+                <i data-lucide="git-merge"></i>
+            </div>
+            <div class="complexity-info">
+                <h3>Múltiplas fases. Checkpoints humanos. Lógica condicional.</h3>
+                <p>Processos com dependências sequenciais, comunicação com partes externas, e aprovação humana obrigatória entre fases. Setup em dias; monitorização supervisionada durante a primeira semana.</p>
+            </div>
+        </div>
+
+        <!-- CASO 7 -->
+        <div class="case-card" id="caso-7">
+            <div class="case-header">
+                <span class="case-number">Caso 07</span>
+                <span class="case-title">Negociação Autónoma de Fornecedores</span>
+            </div>
+            <div class="case-body">
+                <div class="case-context">
+                    <strong>Contexto</strong>
+                    Freelancer a renovar equipamento fotográfico. Um caso equivalente documentado pela comunidade envolveu a compra de uma viatura com €4.200 de poupança via negociação entre dealers.
+                </div>
+
+                <div class="flow-part">
+                    <div class="flow-part-title"><i data-lucide="search"></i> Fase 1 — Pesquisa (automática)</div>
+                    <div class="flow-steps">
+                        <div class="step"><span class="step-num">1</span><span>Pesquisa fornecedores que vendem o equipamento definido</span></div>
+                        <div class="step"><span class="step-num">2</span><span>Compila lista com preços, condições e contactos</span></div>
+                        <div class="step"><span class="step-num">3</span><span>Envia relatório ao utilizador para aprovação da lista</span></div>
+                    </div>
+                </div>
+
+                <div class="checkpoint">
+                    <i data-lucide="user"></i>
+                    <span>CHECKPOINT — Utilizador aprova lista de fornecedores</span>
+                </div>
+
+                <div class="flow-part">
+                    <div class="flow-part-title"><i data-lucide="send"></i> Fase 2 — Contacto inicial (automático)</div>
+                    <div class="flow-steps">
+                        <div class="step"><span class="step-num">1</span><span>Envia email de pedido de cotação com especificações precisas a cada fornecedor</span></div>
+                        <div class="step"><span class="step-num">2</span><span>Regista data e prazo máximo de resposta (48h)</span></div>
+                        <div class="step"><span class="step-num">3</span><span>Se não responder em 48h: envia follow-up automático</span></div>
+                    </div>
+                </div>
+
+                <div class="flow-part">
+                    <div class="flow-part-title"><i data-lucide="repeat"></i> Fase 3 — Negociação cruzada (automático)</div>
+                    <div class="flow-steps">
+                        <div class="step"><span class="step-num">1</span><span>Para cada fornecedor: "Recebi proposta de €X de fornecedor Y. Consegue melhorar?"</span></div>
+                        <div class="step"><span class="step-num">2</span><span>Regista contra-propostas e timestamps</span></div>
+                        <div class="step"><span class="step-num">3</span><span>Máximo 2 rondas de negociação</span></div>
+                    </div>
+                </div>
+
+                <div class="checkpoint">
+                    <i data-lucide="user"></i>
+                    <span>CHECKPOINT — Utilizador escolhe fornecedor na tabela comparativa</span>
+                </div>
+
+                <div class="flow-steps">
+                    <div class="step"><i data-lucide="check" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-success)"></i><span>Agente formaliza a encomenda via email</span></div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-box-header"><i data-lucide="trending-up"></i> Resultados típicos</div>
+                    <ul class="result-items">
+                        <li><i data-lucide="check"></i><span>8-15% de poupança no preço final</span></li>
+                        <li><i data-lucide="check"></i><span>Zero horas em chamadas e emails repetitivos</span></li>
+                        <li><i data-lucide="check"></i><span>Execução assíncrona ao longo de vários dias</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- CASO 8 -->
+        <div class="case-card" id="caso-8">
+            <div class="case-header">
+                <span class="case-number">Caso 08</span>
+                <span class="case-title">Monitorização Competitiva Contínua</span>
+            </div>
+            <div class="case-body">
+                <div class="case-context">
+                    <strong>Contexto</strong>
+                    Startup SaaS a acompanhar 5 concorrentes. Equipa de produto queria saber imediatamente sobre novos features, mudanças de preço e movimentos de mercado.
+                </div>
+
+                <div class="flow-part">
+                    <div class="flow-part-title"><i data-lucide="sun"></i> Heartbeat diário — às 7h</div>
+                    <div class="flow-steps">
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Site de cada concorrente (features, pricing, blog)</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>LinkedIn (posts, contratações, anúncios)</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Product Hunt (lançamentos recentes)</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Reddit (menções nos últimos 7 dias)</span></div>
+                    </div>
+                </div>
+
+                <div class="flow-part">
+                    <div class="flow-part-title"><i data-lucide="zap"></i> Alertas em tempo real</div>
+                    <div class="flow-steps">
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Se alteração relevante (novo feature, mudança de preço, grande anúncio):</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Slack #competitive-intel com: o que mudou, impacto potencial, sugestão de resposta</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Mudança de preço: alerta imediato ao CEO com comparação antes/depois</span></div>
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-box-header"><i data-lucide="trending-up"></i> Resultados</div>
+                    <ul class="result-items">
+                        <li><i data-lucide="check"></i><span>Reação a movimentos da concorrência em horas, não semanas</span></li>
+                        <li><i data-lucide="check"></i><span>Tomada de decisão mais informada sobre roadmap</span></li>
+                        <li><i data-lucide="check"></i><span>Relatório semanal consolidado sem esforço humano</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- CASO 9 -->
+        <div class="case-card" id="caso-9">
+            <div class="case-header">
+                <span class="case-number">Caso 09</span>
+                <span class="case-title">Onboarding de Clientes Multi-Step</span>
+            </div>
+            <div class="case-body">
+                <div class="case-context">
+                    <strong>Contexto</strong>
+                    Agência de serviços digitais. Onboarding de cada cliente novo envolvia 8-10 passos manuais ao longo de 5-7 dias. Com 3-4 clientes novos/mês: ~4h por cliente.
+                </div>
+
+                <div class="flow-part">
+                    <div class="flow-part-title"><i data-lucide="calendar"></i> Dia 1 — Após contrato assinado</div>
+                    <div class="flow-steps">
+                        <div class="step"><span class="step-num">1</span><span>Cria pasta do cliente no Drive com estrutura padrão</span></div>
+                        <div class="step"><span class="step-num">2</span><span>Cria projeto no gestor (Notion/ClickUp)</span></div>
+                        <div class="step"><span class="step-num">3</span><span>Envia email de boas-vindas com próximos passos</span></div>
+                        <div class="step"><span class="step-num">4</span><span>Agenda kickoff call (propõe 3 slots ao cliente)</span></div>
+                        <div class="step"><span class="step-num">5</span><span>Cria canal Slack dedicado ao cliente</span></div>
+                    </div>
+                </div>
+
+                <div class="flow-part">
+                    <div class="flow-part-title"><i data-lucide="file-text"></i> Dia 2-3 — Questionário e briefing</div>
+                    <div class="flow-steps">
+                        <div class="step"><span class="step-num">1</span><span>Envia questionário de onboarding via formulário</span></div>
+                        <div class="step"><span class="step-num">2</span><span>Adiciona cliente a ferramentas necessárias (Analytics, Ads Manager)</span></div>
+                        <div class="step"><span class="step-num">3</span><span>Lê respostas e gera briefing inicial do projeto</span></div>
+                        <div class="step"><span class="step-num">4</span><span>Partilha briefing com equipa interna para validação</span></div>
+                    </div>
+                </div>
+
+                <div class="flow-part">
+                    <div class="flow-part-title"><i data-lucide="check-square"></i> Dia 5 — Arranque</div>
+                    <div class="flow-steps">
+                        <div class="step"><span class="step-num">1</span><span>Envia ao cliente: "Plano das próximas 2 semanas"</span></div>
+                        <div class="step"><span class="step-num">2</span><span>Cria primeiras tarefas no gestor de projetos</span></div>
+                        <div class="step"><span class="step-num">3</span><span>Envia relatório de onboarding completo ao diretor da conta</span></div>
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-box-header"><i data-lucide="trending-up"></i> Resultados</div>
+                    <ul class="result-items">
+                        <li><i data-lucide="check"></i><span>4h por cliente → 45 minutos de supervisão</span></li>
+                        <li><i data-lucide="check"></i><span>Experiência do cliente mais consistente</span></li>
+                        <li><i data-lucide="check"></i><span>Erros por omissão eliminados</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- CASO 10 -->
+        <div class="case-card" id="caso-10">
+            <div class="case-header">
+                <span class="case-number">Caso 10</span>
+                <span class="case-title">Desenvolvimento — CI/CD e Code Review Automático</span>
+            </div>
+            <div class="case-body">
+                <div class="case-context">
+                    <strong>Contexto</strong>
+                    Equipa de 4 devs. PRs ficavam abertos dias sem review. Bugs de regressão chegavam à produção porque o processo de QA era manual e lento.
+                </div>
+
+                <div class="flow-part">
+                    <div class="flow-part-title"><i data-lucide="git-pull-request"></i> Quando novo PR é aberto</div>
+                    <div class="flow-steps">
+                        <div class="step"><span class="step-num">1</span><span>Lê diff do PR</span></div>
+                        <div class="step"><span class="step-num">2</span><span>Análise: testes em falta, potenciais bugs, violações de code style</span></div>
+                        <div class="step"><span class="step-num">3</span><span>Comenta no PR com findings específicos (não opiniões gerais)</span></div>
+                        <div class="step"><span class="step-num">4</span><span>Atribui reviewer com base em quem conhece o código (histórico de commits)</span></div>
+                        <div class="step"><span class="step-num">5</span><span>Notifica reviewer via Slack: "PR #42 aguarda review — estimativa: 20 min"</span></div>
+                    </div>
+                </div>
+
+                <div class="flow-part">
+                    <div class="flow-part-title"><i data-lucide="alert-circle"></i> Monitorização de CI e produção</div>
+                    <div class="flow-steps">
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Se pipeline falhar: lê logs, identifica causa, comenta no PR com sugestão de fix</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Monitora error rates e latência em produção</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Se métrica sai do intervalo: alerta on-call com contexto do último deploy</span></div>
+                    </div>
+                </div>
+
+                <div class="flow-part">
+                    <div class="flow-part-title"><i data-lucide="file-text"></i> Release notes automáticas</div>
+                    <div class="flow-steps">
+                        <div class="step"><span class="step-num">1</span><span>Quando tag de release é criada: agrega commits desde última release</span></div>
+                        <div class="step"><span class="step-num">2</span><span>Categoriza: features, fixes, breaking changes</span></div>
+                        <div class="step"><span class="step-num">3</span><span>Publica no GitHub Releases + canal Slack #releases</span></div>
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-box-header"><i data-lucide="trending-up"></i> Resultados</div>
+                    <ul class="result-items">
+                        <li><i data-lucide="check"></i><span>Tempo médio de review: 3 dias → 4 horas</span></li>
+                        <li><i data-lucide="check"></i><span>Bugs em produção reduzidos 60%</span></li>
+                        <li><i data-lucide="check"></i><span>Release notes nunca mais omitidas</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==============================
+             SECÇÃO 3 — ALTA COMPLEXIDADE
+             ============================== -->
+        <h2 id="alta-complexidade">Complexidade Alta</h2>
+
+        <div class="complexity-header high">
+            <div class="complexity-icon">
+                <i data-lucide="cpu"></i>
+            </div>
+            <div class="complexity-info">
+                <h3>Multi-agente. Memória partilhada. Execução autónoma.</h3>
+                <p>Múltiplos agentes com papéis distintos, comunicação entre eles, integrações externas complexas e execução autónoma multi-dia. Estes sistemas requerem setup cuidadoso e supervisão durante a primeira semana.</p>
+            </div>
+        </div>
+
+        <!-- CASO 11 -->
+        <div class="case-card" id="caso-11">
+            <div class="case-header">
+                <span class="case-number">Caso 11</span>
+                <span class="case-title">Equipa Multi-Agente de Conteúdo SEO</span>
+            </div>
+            <div class="case-body">
+                <div class="case-context">
+                    <strong>Contexto</strong>
+                    Startup SaaS criou equipa de 3 agentes OpenClaw especializados para produzir, otimizar e publicar conteúdo SEO de forma autónoma — do trend research ao artigo publicado.
+                </div>
+
+                <div class="case-section-label"><i data-lucide="users"></i> Arquitetura — 3 agentes</div>
+
+                <div class="arch-agent">
+                    <div class="arch-agent-header">
+                        <i data-lucide="search"></i>
+                        <span>Agente Investigador</span>
+                        <span class="agent-model">Claude Haiku · corre às 7h via cron</span>
+                    </div>
+                    <div class="arch-agent-body">
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Monitoriza Reddit, Hacker News, Twitter/X</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Pesquisa keywords em ascensão com volume e competição</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Analisa top 5 resultados para os melhores keywords</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Produz briefing: tópico, keyword, ângulo diferenciador, estrutura sugerida</span></div>
+                    </div>
+                </div>
+
+                <div class="arch-arrow">
+                    <i data-lucide="arrow-down"></i>
+                    <span>Briefing via sistema de ficheiros</span>
+                </div>
+
+                <div class="arch-agent">
+                    <div class="arch-agent-header">
+                        <i data-lucide="edit-3"></i>
+                        <span>Agente Editor</span>
+                        <span class="agent-model">Claude Sonnet · ativado pelo briefing</span>
+                    </div>
+                    <div class="arch-agent-body">
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Lê briefing do Investigador</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Pesquisa fontes adicionais para enriquecer</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Redige artigo 1500-2000 palavras com estrutura SEO completa</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Inclui meta title, meta description, H1-H3, FAQ, CTA</span></div>
+                    </div>
+                </div>
+
+                <div class="arch-arrow">
+                    <i data-lucide="arrow-down"></i>
+                    <span>Draft para aprovação</span>
+                </div>
+
+                <div class="arch-agent">
+                    <div class="arch-agent-header">
+                        <i data-lucide="upload-cloud"></i>
+                        <span>Agente Publisher</span>
+                        <span class="agent-model">Claude Haiku · aguarda aprovação humana</span>
+                    </div>
+                    <div class="arch-agent-body">
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Envia ao humano via Telegram: "Artigo pronto: '[título]' — 1847 palavras. Aprovar?"</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Opções: [Aprovar] [Editar] [Rejeitar]</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Se aprovado: publica no CMS via API com slug, categoria e tags corretas</span></div>
+                    </div>
+                </div>
+
+                <div class="case-section-label"><i data-lucide="clock"></i> Timeline de execução</div>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-time">07:00</div>
+                        <div class="timeline-text">Investigador analisa tendências</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">07:15</div>
+                        <div class="timeline-text">Briefing enviado ao Editor → Editor começa a redigir</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">07:45</div>
+                        <div class="timeline-text">Draft enviado ao Publisher → Publisher notifica humano</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">08:10</div>
+                        <div class="timeline-text">Humano aprova (2 minutos)</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">08:11</div>
+                        <div class="timeline-text">Artigo publicado</div>
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-box-header"><i data-lucide="trending-up"></i> Resultados reportados</div>
+                    <ul class="result-items">
+                        <li><i data-lucide="check"></i><span>5 artigos SEO/semana com 2 minutos de supervisão por artigo</span></li>
+                        <li><i data-lucide="check"></i><span>Aumento de tráfego orgânico visível em 3-4 meses</span></li>
+                        <li><i data-lucide="check"></i><span>Custo total: ~€15-30/mês em API</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- CASO 12 -->
+        <div class="case-card" id="caso-12">
+            <div class="case-header">
+                <span class="case-number">Caso 12</span>
+                <span class="case-title">Suporte ao Cliente com Escalamento Inteligente</span>
+            </div>
+            <div class="case-body">
+                <div class="case-context">
+                    <strong>Contexto</strong>
+                    SaaS B2B com 500 clientes. Equipa de suporte de 2 pessoas recebia 80-120 tickets/dia. 70% eram repetitivos e resolvíveis com documentação existente.
+                </div>
+
+                <div class="arch-agent">
+                    <div class="arch-agent-header">
+                        <i data-lucide="filter"></i>
+                        <span>Agente Triagem</span>
+                        <span class="agent-model">Sempre ativo</span>
+                    </div>
+                    <div class="arch-agent-body">
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Lê tickets novos em tempo real (Intercom/Zendesk via API)</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Classifica: simples → responde | complexo → escala | bug → cria issue GitHub</span></div>
+                        <div class="step"><i data-lucide="alert-circle" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-danger)"></i><span>"cancelar", "contrato", "reembolso" → escala imediatamente para humano sénior</span></div>
+                    </div>
+                </div>
+
+                <div class="arch-agent">
+                    <div class="arch-agent-header">
+                        <i data-lucide="book-open"></i>
+                        <span>Agente Knowledge Base</span>
+                        <span class="agent-model">Corre semanalmente</span>
+                    </div>
+                    <div class="arch-agent-body">
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Analisa tickets da semana anterior</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Identifica perguntas sem resposta na knowledge base</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Gera rascunhos de novos artigos para as lacunas</span></div>
+                    </div>
+                </div>
+
+                <div class="arch-agent">
+                    <div class="arch-agent-header">
+                        <i data-lucide="user-check"></i>
+                        <span>Agente Proativo</span>
+                        <span class="agent-model">Corre diariamente</span>
+                    </div>
+                    <div class="arch-agent-body">
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Identifica clientes com 3+ tickets no último mês</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Envia mensagem proativa: "Notei que têm tido questões sobre X. Posso ajudar?"</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Clientes enterprise → alerta customer success para check-in</span></div>
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-box-header"><i data-lucide="trending-up"></i> Resultados</div>
+                    <ul class="result-items">
+                        <li><i data-lucide="check"></i><span>2 pessoas gerem 120 tickets/dia com qualidade</span></li>
+                        <li><i data-lucide="check"></i><span>Tempo médio de resposta: 4h → 8 minutos (tickets simples)</span></li>
+                        <li><i data-lucide="check"></i><span>CSAT: 72% → 89%</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- CASO 13 -->
+        <div class="case-card" id="caso-13">
+            <div class="case-header">
+                <span class="case-number">Caso 13</span>
+                <span class="case-title">Pesquisa e Relatórios de Inteligência de Mercado</span>
+            </div>
+            <div class="case-body">
+                <div class="case-context">
+                    <strong>Contexto</strong>
+                    Fundo de investimento a acompanhar 50 empresas de portfolio e 200 de watchlist. Equipa de 3 analistas passava 20h/semana em pesquisa e compilação de relatórios.
+                </div>
+
+                <div class="flow-part">
+                    <div class="flow-part-title"><i data-lucide="activity"></i> Monitorização contínua — heartbeat a cada 2h</div>
+                    <div class="flow-steps">
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Notícias recentes, comunicados de imprensa, filings regulatórios</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>LinkedIn: contratações sénior, demissões, novos produtos</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Glassdoor: tendências de avaliação de empregados</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>GitHub: atividade de repositórios públicos</span></div>
+                    </div>
+                </div>
+
+                <div class="flow-part">
+                    <div class="flow-part-title"><i data-lucide="zap"></i> Alertas imediatos — eventos de alta importância</div>
+                    <div class="flow-steps">
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Funding round, saída de CEO, acquisition, IPO</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Alerta imediato via Slack ao partner responsável</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Resume o evento, impacto potencial, ações sugeridas</span></div>
+                    </div>
+                </div>
+
+                <div class="flow-part">
+                    <div class="flow-part-title"><i data-lucide="file-text"></i> Relatório mensal consolidado — 1.º dia do mês</div>
+                    <div class="flow-steps">
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Portfolio review: cada empresa com score (verde/amarelo/vermelho)</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Watchlist highlights: top 5 com mais momentum</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>PDF formatado pronto para meeting do board</span></div>
+                    </div>
+                </div>
+
+                <div class="flow-part">
+                    <div class="flow-part-title"><i data-lucide="search"></i> Deep dive on demand</div>
+                    <div class="flow-steps">
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Analista envia: "Faz um deep dive na empresa X"</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>30 minutos de recolha em todas as fontes disponíveis</span></div>
+                        <div class="step"><i data-lucide="arrow-right" style="width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--color-secondary)"></i><span>Relatório de 5 páginas: história, produto, equipa, financeiros estimados, competidores, riscos</span></div>
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-box-header"><i data-lucide="trending-up"></i> Resultados</div>
+                    <ul class="result-items">
+                        <li><i data-lucide="check"></i><span>20h/semana de pesquisa → 3h de revisão e aprovação</span></li>
+                        <li><i data-lucide="check"></i><span>Cobertura alargada de 50 para 250 empresas com a mesma equipa</span></li>
+                        <li><i data-lucide="check"></i><span>Zero empresas importantes passam despercebidas</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==============================
+             PRINCÍPIOS
+             ============================== -->
+        <h2 id="principios">O que todos os casos bem-sucedidos têm em comum</h2>
+
+        <div class="principles-grid">
+            <div class="principle-card">
+                <div class="principle-number">01</div>
+                <div class="principle-title">Começaram simples</div>
+                <p class="principle-text">Nenhum arrancou com multi-agentes. O caso 11 (SEO) começou como um único agente. Só depois de estável é que foi dividido em 3 agentes especializados.</p>
+            </div>
+            <div class="principle-card">
+                <div class="principle-number">02</div>
+                <div class="principle-title">Checkpoints humanos explícitos</div>
+                <p class="principle-text">Complexidade média e alta têm sempre pontos onde o humano aprova antes de continuar. Autonomia total sem supervisão é o caminho mais rápido para erros caros.</p>
+            </div>
+            <div class="principle-card">
+                <div class="principle-number">03</div>
+                <div class="principle-title">Falha visível</div>
+                <p class="principle-text">Todos os casos têm um mecanismo para dizer "não consegui" em vez de falhar silenciosamente. Um agente que falha sem avisar é pior do que não ter agente nenhum.</p>
+            </div>
+            <div class="principle-card">
+                <div class="principle-number">04</div>
+                <div class="principle-title">Modelos certos para cada tarefa</div>
+                <p class="principle-text">Heartbeats e classificação correm em modelos baratos (Haiku, Ollama local). Só tarefas criativas ou de raciocínio complexo usam modelos premium.</p>
+            </div>
+            <div class="principle-card">
+                <div class="principle-number">05</div>
+                <div class="principle-title">Supervisão nos primeiros dias</div>
+                <p class="principle-text">Todos correram em modo supervisionado durante pelo menos uma semana antes de ficarem 24/7. Nenhum ligou o piloto automático logo no arranque.</p>
+            </div>
+            <div class="principle-card">
+                <div class="principle-number">06</div>
+                <div class="principle-title">Critérios claros de sucesso</div>
+                <p class="principle-text">Cada automação tem uma definição clara de "funcionou" e "falhou". Sem métricas, não é possível saber se o agente está a ajudar ou a criar problemas invisíveis.</p>
+            </div>
+        </div>
+
+        <!-- Signals table -->
+        <h3>Sinais de que um processo é bom candidato</h3>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sinal</th>
+                        <th>Porquê importa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Repetitivo e previsível</strong></td>
+                        <td>Mesmas etapas toda semana. Fácil de treinar e verificar.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Baseado em dados estruturados</strong></td>
+                        <td>Emails, APIs, formulários. Menos ambiguidade = menos erros.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Critérios claros de sucesso/falha</strong></td>
+                        <td>O agente sabe quando terminou e quando pediu ajuda.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Custo de erro baixo ou reversível</strong></td>
+                        <td>Erros acontecem. Importa que sejam recuperáveis.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Velocidade melhora o resultado</strong></td>
+                        <td>Resposta em segundos vs horas tem impacto real (leads, suporte).</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>O que ainda não faz sentido automatizar</h3>
+        <div class="highlight-box" style="border-left-color:var(--color-danger);">
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
+                <li style="display:flex;align-items:flex-start;gap:8px;font-size:13px;"><i data-lucide="x" style="width:14px;height:14px;color:var(--color-danger);flex-shrink:0;margin-top:1px;"></i><span><strong>Decisões estratégicas com ambiguidade alta</strong> — o modelo não tem contexto suficiente para julgar bem</span></li>
+                <li style="display:flex;align-items:flex-start;gap:8px;font-size:13px;"><i data-lucide="x" style="width:14px;height:14px;color:var(--color-danger);flex-shrink:0;margin-top:1px;"></i><span><strong>Conversas de venda complexas e relacionais</strong> — o cliente sente a diferença</span></li>
+                <li style="display:flex;align-items:flex-start;gap:8px;font-size:13px;"><i data-lucide="x" style="width:14px;height:14px;color:var(--color-danger);flex-shrink:0;margin-top:1px;"></i><span><strong>Negociações com muitas variáveis não estruturadas</strong> — risco de se perder nuances críticas</span></li>
+                <li style="display:flex;align-items:flex-start;gap:8px;font-size:13px;"><i data-lucide="x" style="width:14px;height:14px;color:var(--color-danger);flex-shrink:0;margin-top:1px;"></i><span><strong>Tudo o que requer julgamento ético situacional</strong> — sem exceções</span></li>
+            </ul>
+        </div>
+
+    </div><!-- /container -->
+
+    <!-- ==============================
+         FOOTER
+         ============================== -->
+    <footer class="doc-footer">
+        <div class="container" style="padding-top:0;padding-bottom:0;">
+            <img src="logo-jp.svg" alt="JP Design" onerror="this.style.display='none'">
+            <p class="claim">IGNITING INNOVATING THINKING</p>
+            <div class="contacts">
+                <a href="mailto:joaopaduadesign@gmail.com">
+                    <i data-lucide="mail"></i>
+                    joaopaduadesign@gmail.com
+                </a>
+                <a href="tel:916835648">
+                    <i data-lucide="phone"></i>
+                    916 835 648
+                </a>
+                <a href="https://github.com/Joao0Padua/openclaw-optimization" target="_blank" rel="noopener">
+                    <i data-lucide="github"></i>
+                    github.com/Joao0Padua/openclaw-optimization
+                </a>
+            </div>
+            <p style="margin-top:20px;font-size:11px;color:var(--color-border);">João Pádua Communication Design · Fevereiro 2026</p>
+        </div>
+    </footer>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+
+        // Hamburger menu toggle
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu = document.getElementById('nav-menu');
+
+        hamburger.addEventListener('click', function() {
+            const isOpen = this.classList.toggle('open');
+            navMenu.classList.toggle('open');
+            this.setAttribute('aria-expanded', isOpen);
+        });
+
+        // Close menu when link is clicked (mobile)
+        navMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('open');
+                navMenu.classList.remove('open');
+                hamburger.setAttribute('aria-expanded', 'false');
+            });
+        });
+
+        // Active link on scroll
+        const sections = document.querySelectorAll('[id]');
+        const navLinks = document.querySelectorAll('.nav-links a');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    navLinks.forEach(link => {
+                        link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id);
+                    });
+                }
+            });
+        }, { rootMargin: '-20% 0px -75% 0px' });
+
+        sections.forEach(section => observer.observe(section));
+    </script>
+</body>
+</html>
