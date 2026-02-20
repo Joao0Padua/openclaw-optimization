@@ -1,0 +1,299 @@
+{
+  "wizard": {
+    "lastRunAt": "2026-02-09T22:36:03.840Z",
+    "lastRunVersion": "2026.2.9",
+    "lastRunCommand": "configure",
+    "lastRunMode": "local"
+  },
+  "update": {
+    "channel": "stable"
+  },
+  "auth": {
+    "profiles": {
+      "kimi-coding:default": {
+        "provider": "kimi-coding",
+        "mode": "api_key"
+      },
+      "openrouter:default": {
+        "provider": "openrouter",
+        "mode": "api_key"
+      },
+      "openai:default": {
+        "provider": "openai",
+        "mode": "api_key"
+      },
+      "synthetic:default": {
+        "provider": "synthetic",
+        "mode": "api_key"
+      },
+      "anthropic:default": {
+        "provider": "anthropic",
+        "mode": "token"
+      }
+    }
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "ollama": {
+        "baseUrl": "http://127.0.0.1:11434",
+        "api": "openai",
+        "models": [
+          {
+            "id": "llama3.1:8b-instruct-q4_K_M",
+            "name": "Llama 3.1 8B (local)",
+            "reasoning": false,
+            "input": ["text"],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 32768,
+            "maxTokens": 4096
+          }
+        ]
+      },
+      "synthetic": {
+        "baseUrl": "https://api.synthetic.new/anthropic",
+        "api": "anthropic-messages",
+        "models": [
+          {
+            "id": "hf:zai-org/GLM-4.7",
+            "name": "GLM-4.7",
+            "reasoning": false,
+            "input": ["text"],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 198000,
+            "maxTokens": 128000
+          },
+          {
+            "id": "hf:moonshotai/Kimi-K2.5",
+            "name": "Kimi K2.5",
+            "reasoning": true,
+            "input": ["text"],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 256000,
+            "maxTokens": 8192
+          }
+        ]
+      }
+    }
+  },
+  "logging": {
+    "redactSensitive": "tools"
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "anthropic/claude-sonnet-4-5",
+        "fallbacks": [
+          "openai/gpt-5-mini",
+          "kimi-coding/k2p5",
+          "openrouter/google/gemini-3-flash-preview"
+        ]
+      },
+      "models": {
+        "anthropic/claude-haiku-4-5": {
+          "alias": "haiku"
+        },
+        "anthropic/claude-sonnet-4-5": {
+          "alias": "sonnet"
+        },
+        "anthropic/claude-opus-4-6": {
+          "alias": "opus"
+        },
+        "kimi-coding/k2p5": {
+          "alias": "kimi"
+        }
+      },
+      "workspace": "~/.openclaw/workspace",
+      "memorySearch": {
+        "sources": ["memory", "sessions"],
+        "experimental": {
+          "sessionMemory": true
+        },
+        "provider": "openai",
+        "model": "text-embedding-3-small"
+      },
+      "contextPruning": {
+        "mode": "cache-ttl",
+        "ttl": "6h",
+        "keepLastAssistants": 3
+      },
+      "compaction": {
+        "mode": "default",
+        "memoryFlush": {
+          "enabled": true,
+          "softThresholdTokens": 40000,
+          "prompt": "Extract key decisions, state changes, lessons, blockers to memory/YYYY-MM-DD.md. Format: ## [HH:MM] Topic. Skip routine work. NO_FLUSH if nothing important.",
+          "systemPrompt": "Compacting session context. Extract only what's worth remembering. No fluff."
+        }
+      },
+      "heartbeat": {
+        "model": "ollama/llama3.1:8b-instruct-q4_K_M"
+      },
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      }
+    },
+    "list": [
+      {
+        "id": "main",
+        "default": true
+      },
+      {
+        "id": "monitor",
+        "model": {
+          "primary": "openai/gpt-5-nano",
+          "fallbacks": [
+            "openrouter/google/gemini-2.5-flash-lite",
+            "anthropic/claude-haiku-4-5"
+          ]
+        }
+      },
+      {
+        "id": "researcher",
+        "model": {
+          "primary": "kimi-coding/k2p5",
+          "fallbacks": ["synthetic/hf:zai-org/GLM-4.7", "openai/gpt-5-mini"]
+        }
+      }
+    ]
+  },
+  "tools": {
+    "profile": "full",
+    "web": {
+      "search": {
+        "enabled": true,
+        "apiKey": "<YOUR_BRAVE_API_KEY>"
+      },
+      "fetch": {
+        "enabled": true
+      }
+    },
+    "media": {
+      "audio": {
+        "enabled": true,
+        "models": [
+          {
+            "type": "cli",
+            "command": "/path/to/whisper-wrapper",
+            "args": ["{input}"]
+          }
+        ]
+      }
+    }
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions",
+    "tts": {
+      "auto": "inbound",
+      "provider": "edge",
+      "edge": {
+        "enabled": true,
+        "voice": "en-GB-RyanNeural"
+      }
+    }
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "restart": true
+  },
+  "hooks": {
+    "internal": {
+      "enabled": true,
+      "entries": {
+        "command-logger": {
+          "enabled": true
+        },
+        "boot-md": {
+          "enabled": true
+        },
+        "session-memory": {
+          "enabled": true
+        }
+      }
+    }
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "dmPolicy": "pairing",
+      "botToken": "<YOUR_TELEGRAM_BOT_TOKEN>",
+      "groupPolicy": "allowlist",
+      "streamMode": "partial"
+    },
+    "discord": {
+      "enabled": true,
+      "token": "<YOUR_DISCORD_BOT_TOKEN>",
+      "groupPolicy": "allowlist",
+      "dm": {
+        "enabled": true,
+        "policy": "allowlist",
+        "allowFrom": ["<YOUR_DISCORD_USER_ID>"]
+      },
+      "guilds": {
+        "<YOUR_DISCORD_GUILD_ID>": {
+          "requireMention": false,
+          "users": ["<YOUR_DISCORD_USER_ID>"],
+          "channels": {
+            "*": {
+              "allow": true
+            }
+          }
+        }
+      }
+    },
+    "slack": {
+      "mode": "socket",
+      "webhookPath": "/slack/events",
+      "enabled": true,
+      "botToken": "<YOUR_SLACK_BOT_TOKEN>",
+      "appToken": "<YOUR_SLACK_APP_TOKEN>",
+      "userTokenReadOnly": true",
+      "groupPolicy": "allowlist",
+      "channels": {}
+    }
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "loopback",
+    "auth": {
+      "mode": "token",
+      "token": "<GENERATE_RANDOM_TOKEN>",
+      "allowTailscale": true
+    },
+    "tailscale": {
+      "mode": "serve",
+      "resetOnExit": true
+    }
+  },
+  "plugins": {
+    "entries": {
+      "telegram": {
+        "enabled": true
+      },
+      "slack": {
+        "enabled": true
+      },
+      "discord": {
+        "enabled": true
+      }
+    }
+  }
+}
